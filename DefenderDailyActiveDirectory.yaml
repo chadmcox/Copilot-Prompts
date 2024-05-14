@@ -1,1 +1,91 @@
-
+Descriptor:
+  Name: DefenderDailyActiveDirectory
+  DisplayName: Defender Active Directory Queries
+  Description:  XDR Scenarios we use to get critical objects in Defender.
+SkillGroups:
+  - Format: KQL
+    Skills:
+      - Name: GetDefenderDomainControllers
+        DisplayName: Get Defender Domain Controller List  
+        Description: Returns all the domain controllers in defender
+        Inputs:
+        Settings:
+          Target: Defender
+          Template: |-
+            IdentityDirectoryEvents
+            | where Application == "Active Directory"
+            | where Timestamp > ago(10d)
+            | where DestinationDeviceName <> ""
+            | distinct DestinationDeviceName = tolower(DestinationDeviceName)
+      - Name: GetDomainControllerRemoteSignIn
+        DisplayName: Get Remote Sign-in attempts to domain controllers
+        Description: Fetches a list of last sign-in attempts to domain controllers remotely in defender
+        Inputs:
+          - Name: domainControllerRemoteSignIn
+            Description: the domain controller you would like to see remote sign-in for
+            Required: false
+        Settings:
+          Target: Defender
+          Template: |-
+            let domaincontrollers = IdentityDirectoryEvents | distinct DestinationDeviceName;
+            IdentityLogonEvents 
+            | where LogonType == 'Remote desktop'
+            | where TargetDeviceName in (domaincontrollers)
+            | project AccountName, AccountDisplayName, AccountDomain, DeviceName, TargetDeviceName, ActionType, FailureReason
+      - Name: GetActiveDirectoryPrivilegedGroupChanges
+        DisplayName: Get latest changes to Active Directory Privileged Groups
+        Description: Get latest changes to Active Directory Privileged Groups in Defender
+        Inputs:
+          - Name: domainController
+            Description: the domain controller you would like to see remote sign-in for
+            Required: false
+        Settings:
+          Target: Defender
+          Template: |-
+            let groups = pack_array("Account Operators","Administrators","Backup Operators","Domain Admins","Domain Controllers","Enterprise Admins","Print Operators","Read-only Domain Controllers","Replicator","Schema Admins","Server Operators","Cert Publishers","Certificate Service DCOM Access","Cryptographic Operators","Distributed COM Users","DnsAdmins","Enterprise Key Admins","Key Admins");
+            IdentityDirectoryEvents
+            | where Timestamp >= now(-15d)
+            | where ActionType == "Group Membership changed"
+            | extend AdditionalFields = parse_json(AdditionalFields)
+            | extend FromGroup = AdditionalFields.["FROM.GROUP"]
+            | extend ToGroup = AdditionalFields.["TO.GROUP"]
+            | where ToGroup in (groups) or FromGroup in (groups)
+            // Extract target user or device name
+            | extend TargetObject =  iff( isnull(AdditionalFields.["TARGET_OBJECT.USER"]), AdditionalFields.["TARGET_OBJECT.GROUP"], AdditionalFields.["TARGET_OBJECT.USER"])
+            // Special case group managed service accounts and devices
+            | extend TargetObject =  iff( isnull(TargetObject), AdditionalFields.["TARGET_OBJECT.DEVICE"], TargetObject)
+            | project-away AdditionalFields
+            | project-reorder Timestamp, ActionType,Application, FromGroup, ToGroup, TargetObject
+      - Name: GetActiveDirectoryUserLockOut
+        DisplayName: Get latest lockout for user
+        Description: Get the last lockout for active directory user and the location or device it occured from in the defender
+        Inputs:
+          - Name: userUPN
+            Description: The userprincipalname of the user ..... bob@contoso.com
+            Required: true
+        Settings:
+          Target: Defender
+          Template: |-
+            IdentityLogonEvents 
+            | where ActionType == "LogonFailed"
+            | where Application == "Active Directory"
+            | where FailureReason == "AccountDisabled"
+            | extend AccountUpn = tolower(userUPN)
+            | where AccountUpn has ('{{userUPN}}')
+            | extend TargetOS = tostring(parse_json(AdditionalFields.TargetComputerOperatingSystem))
+            | project Timestamp,AccountDisplayName,AccountName, AccountDomain, AccountUpn, ActionType, FailureReason,TargetDeviceName,TargetOS, DeviceName
+      - Name: GetActiveDirectorySensitiveUserSignInActivity
+        DisplayName: Get sign-in activity for sensitive users
+        Description: Get the list of sign-ins for active directory sensitive users in defender
+        Inputs:
+        Settings:
+          Target: Defender
+          Template: |-
+          let list = IdentityInfo
+          | where Tags contains "Sensitive"
+          | where SourceProvider == "ActiveDirectory"
+          | where OnPremSid <> ""
+          | distinct OnPremSid;
+          IdentityLogonEvents 
+          | where AccountSid in (list)
+          | distinct  AccountDomain, AccountSid, AccountName,AccountUpn, DestinationDeviceName
