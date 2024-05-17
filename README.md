@@ -1,16 +1,38 @@
 # Copilot-Prompts
 
 ## Prompts I want to test or build
-What is x signing into on premise
-What is x signing into in Azure
-What devices is x using
-What changes has x made in Entra
-Does x have any known user risk
-Show applications x has failed to sign into
-Has x account been locked out and why
-Does x have any sign-ins from unknown devices
-Give me locations x has signed in from.
-Give me a list of accounts that might be involved with a password spray
+* What is x signing into on premise
+* What is x signing into in Azure
+* What devices is x using
+* What changes has x made in Entra
+* Does x have any known user risk
+* Show applications x has failed to sign into
+* Has x account been locked out and why
+* Does x have any sign-ins from unknown devices
+* Give me locations x has signed in from.
+* Give me a list of accounts that might be involved with a password spray
+* Does x have any known roles or is flagged as sensitive
+* Has any taps been issued to global admins
+* Has the entra connect syncronization account accessed anything other than the azure ad connect application
+* Has the entra connect syncronization account done anything unusual
+* Has the entra connect syncronization account been issued a tap
+* What changes has global admin accounts made recently
+* Any bad password attempts against global admin accounts
+* Have any cloud only accounts been created
+* List conditional access policies recently updated or added
+* What changes have been made to entra roles lately
+* what changes have been made to domains admins
+* what changes have been made to enterprise admins
+* what changes have been made to schema admins
+* give recent added permissions to applications in entra
+* why is user not able to change password
+* any users with deny or report as suspicious mfa responses
+* what mfa methods is the user using
+* has x recently registered an mfa method
+* what applications are guest signing into
+* who consented to a permission
+* what users have been issued a temporary access pass
+* what users recently change mfa with a risk
 
 
 This is resources for various prompts I find useful.
