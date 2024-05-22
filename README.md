@@ -1,6 +1,16 @@
 # Copilot-Prompts
 ## Prompts that work
-* user with accountname ***change_me*** is receiving multiple bad passwords while trying to logon to Active Directory what computer are they trying to logon from. this information should be found in Defender
+* user with accountname ***change_me*** is receiving multiple bad passwords while trying to logon to Active Directory what computer are they trying to logon from. this information should be found in Defender.
+* when was the last time accountname ***change_me*** password was changed this data should be found in defender (note this will only show last 30 days).
+* what application is upn ***change_me*** logging onto over last 7 days. this information shuld be found in defender
+* can you retrieve a list of sensitve accounts that are in the identity info table from defender
+* over the last 7 days ***change_me*** was being prompted to MFA. which conditional access policy was causing that. this information should be in defender the table to use is AADSignInEventsBeta
+* over the last 7 days ***change_me*** was logged in from multiple locations. provide that list in a table. this information should be in defender the table to use is AADSignInEventsBeta
+* follow up:  /askGPT can you summarize the locations and is there anything unusual about them
+* /askGPT what is the application: Microsoft Azure Active Directory Connect used for in Azure AD
+* follow up: are there any threat indicators that involve that application
+* retrieve a list of users, errorcodes, country, state, city and ipaddress that have tried to sign-in to application id 'cb1056e2-e479-49de-ae31-7812af012ed8' in entra over the last 7 days. This data should be found in defender in the AADSignInEventsBeta table
+* what users currently have risk, this information should be in defender the table to use is AADSignInEventsBeta
 
 ## Prompts I want to test or build
 * What is x signing into on premise
