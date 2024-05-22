@@ -1,6 +1,6 @@
 # Copilot-Prompts
 ## Prompts that work
-* user with accountname ***change me***** is receiving multiple bad passwords while trying to logon to Active Directory what computer are they trying to logon from. this information should be found in Defender
+* user with accountname ***change_me*** is receiving multiple bad passwords while trying to logon to Active Directory what computer are they trying to logon from. this information should be found in Defender
 
 ## Prompts I want to test or build
 * What is x signing into on premise
