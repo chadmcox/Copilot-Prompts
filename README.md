@@ -10,7 +10,7 @@
 * /askGPT what is the application: Microsoft Azure Active Directory Connect used for in Azure AD
 * follow up: are there any threat indicators that involve that application
 * retrieve a list of users, errorcodes, country, state, city and ipaddress that have tried to sign-in to application id 'cb1056e2-e479-49de-ae31-7812af012ed8' in entra over the last 7 days. This data should be found in defender in the AADSignInEventsBeta table
-* what users currently have risk, this information should be in defender the table to use is AADSignInEventsBeta
+* has upn ***change_me*** signed in over the last 7 days from a device that is not compliant 
 
 ## Prompts I want to test or build
 * What is x signing into on premise
